@@ -33,6 +33,6 @@
     </form>
 </div>
 
-<a href="addCustomer.jsp">Hello Servlet</a>
+<a href="addProoducts.jsp">Hello Servlet</a>
 </body>
 </html>

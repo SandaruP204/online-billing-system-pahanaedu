@@ -10,11 +10,11 @@ public class ProductDAO {
     public void addProduct(Product product) {
         try {
             Connection con = DBConnection.getConnection();
-            String sql = "INSERT INTO products (prroductNo, name, unit) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO products (prroductNo, name, unit) VALUES (?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, products.getAccountNo());
-            ps.setString(2, products.getName());
-            ps.setInt(5, products.getUnit());
+            ps.setInt(1, product.getProductNo());
+            ps.setString(2, product.getName());
+            ps.setInt(3, product.getUnit());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,6 +38,6 @@ public class ProductDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return customer;
+        return product;
     }
 }
