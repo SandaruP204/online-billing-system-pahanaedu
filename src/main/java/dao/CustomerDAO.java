@@ -4,6 +4,8 @@ import model.Customer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.ArrayList;
 
 public class CustomerDAO {
 
@@ -23,25 +25,25 @@ public class CustomerDAO {
         }
     }
 
-    public Customer getCustomer(int accountNo) {
-        Customer customer = null;
+    public List<Customer> getAllCustomers() {
+        List<Customer> customerList = new ArrayList<>();
         try {
             Connection con = DBConnection.getConnection();
-            String sql = "SELECT * FROM customers WHERE accountNo = ?";
+            String sql = "SELECT * FROM customers";
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, accountNo);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                customer = new Customer();
+            while (rs.next()) {
+                Customer customer = new Customer();
                 customer.setAccountNo(rs.getInt("accountNo"));
                 customer.setName(rs.getString("name"));
                 customer.setAddress(rs.getString("address"));
                 customer.setPhone(rs.getString("phone"));
                 customer.setUnitsConsumed(rs.getInt("unitsConsumed"));
+                customerList.add(customer);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return customer;
+        return customerList;
     }
 }
