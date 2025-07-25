@@ -28,6 +28,7 @@
         <th>Product No</th>
         <th>Name</th>
         <th>Unit</th>
+        <th>Price</th>
     </tr>
 
     <%
@@ -38,6 +39,7 @@
         <td><%= p.getProductNo() %></td>
         <td><%= p.getName() %></td>
         <td><%= p.getUnit() %></td>
+        <td><%= p.getPrice() %></td>
     </tr>
     <%
         }

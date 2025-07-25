@@ -12,7 +12,7 @@
 <div class="wrapper">
     <h1>Login</h1>
 
-    <!-- Show error message if it exists -->
+
     <p id="error-message" style="color:red;">
         <%= request.getAttribute("errorMessage") != null ? request.getAttribute("errorMessage") : "" %>
     </p>
@@ -36,5 +36,6 @@
 <a href="addProducts.jsp">Add ur Products!</a>
 <a href="viewProducts">View ur Products!</a>
 <a href="viewCustomers">View Customers</a>
+<a href="buyProduct">View Customers</a>
 </body>
 </html>

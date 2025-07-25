@@ -21,11 +21,13 @@ public class AddProductServlet extends HttpServlet {
         int productNo = Integer.parseInt(request.getParameter("productNo"));
         String name = request.getParameter("name");
         int unit = Integer.parseInt(request.getParameter("unit"));
+        double price = Double.parseDouble(request.getParameter("price"));
 
         Product product = new Product();
         product.setProductNo(productNo);
         product.setName(name);
         product.setUnit(unit);
+        product.setPrice(price);
 
         ProductDAO dao = new ProductDAO();
         dao.addProduct(product);

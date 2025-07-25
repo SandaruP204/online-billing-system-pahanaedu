@@ -16,6 +16,7 @@
     <label>Product Number:</label><input type="number" name="productNo" required><br>
     <label>Name:</label><input type="text" name="name" required><br>
     <label>Quantity:</label><input type="number" name="unit" required><br>
+    <label>Price:</label><input type="number" name="price" required><br>
     <button type="submit">Add Product</button>
 </form>
 </body>
