@@ -46,4 +46,58 @@ public class CustomerDAO {
         }
         return customerList;
     }
+
+
+    public Customer getCustomer(int accountNo) {
+        Customer customer = null;
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "SELECT * FROM customers WHERE accountNo = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, accountNo);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                customer = new Customer();
+                customer.setAccountNo(rs.getInt("accountNo"));
+                customer.setName(rs.getString("name"));
+                customer.setAddress(rs.getString("address"));
+                customer.setPhone(rs.getString("phone"));
+                customer.setUnitsConsumed(rs.getInt("unitsConsumed"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customer;
+    }
+
+
+    public void deleteCustomer(int accountNo) {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "DELETE FROM customers WHERE accountNo = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, accountNo);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void updateCustomer(Customer customer) {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "UPDATE customers SET name = ?, address = ?, phone = ?, unitsConsumed = ? WHERE accountNo = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, customer.getName());
+            ps.setString(2, customer.getAddress());
+            ps.setString(3, customer.getPhone());
+            ps.setInt(4, customer.getUnitsConsumed());
+            ps.setInt(5, customer.getAccountNo());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

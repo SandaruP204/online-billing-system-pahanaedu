@@ -4,31 +4,22 @@
 
 <html>
 <head>
-    <title>View Products</title>
+    <title>Manage Products</title>
 </head>
 <body>
 <h1>All Products</h1>
 
 <%
-    // Declare once here
     List<Product> products = (List<Product>) request.getAttribute("products");
-
-    // Debug output
-    if (products == null) {
-        out.println("<p><b>Debug:</b> 'products' attribute is <span style='color:red;'>null</span>.</p>");
-    } else if (products.isEmpty()) {
-        out.println("<p><b>Debug:</b> Product list is <span style='color:orange;'>empty</span>.</p>");
-    } else {
-        out.println("<p><b>Debug:</b> Product list size: " + products.size() + "</p>");
-    }
 %>
 
-<table border="1">
+<table border="1" cellpadding="8" cellspacing="0">
     <tr>
         <th>Product No</th>
         <th>Name</th>
         <th>Unit</th>
         <th>Price</th>
+        <th>Actions</th>
     </tr>
 
     <%
@@ -36,16 +27,33 @@
             for (Product p : products) {
     %>
     <tr>
-        <td><%= p.getProductNo() %></td>
-        <td><%= p.getName() %></td>
-        <td><%= p.getUnit() %></td>
-        <td><%= p.getPrice() %></td>
+        <form action="EditProductServlet" method="post">
+            <td>
+                <input type="text" name="productNo" value="<%= p.getProductNo() %>" readonly>
+            </td>
+            <td>
+                <input type="text" name="name" value="<%= p.getName() %>">
+            </td>
+            <td>
+                <input type="number" name="unit" value="<%= p.getUnit() %>">
+            </td>
+            <td>
+                <input type="text" name="price" value="<%= p.getPrice() %>">
+            </td>
+            <td>
+                <input type="submit" value="Save">
+                <a href="DeleteProductServlet?productNo=<%= p.getProductNo() %>"
+                   onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
+            </td>
+        </form>
     </tr>
     <%
         }
     } else {
     %>
-    <tr><td colspan="3">No products found.</td></tr>
+    <tr>
+        <td colspan="5">No products found.</td>
+    </tr>
     <%
         }
     %>

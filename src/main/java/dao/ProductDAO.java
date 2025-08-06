@@ -97,4 +97,32 @@ public class ProductDAO {
     }
 
 
+    public void updateProduct(Product product) {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "UPDATE products SET name=?, unit=?, price=? WHERE productNo=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, product.getName());
+            ps.setInt(2, product.getUnit());
+            ps.setDouble(3, product.getPrice());
+            ps.setInt(4, product.getProductNo());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteProduct(int productNo) {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "DELETE FROM products WHERE productNo=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, productNo);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

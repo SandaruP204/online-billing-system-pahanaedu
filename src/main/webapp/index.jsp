@@ -1,41 +1,30 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page session="true" %>
+<%
+    String username = (String) session.getAttribute("username");
+    if (username == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
-    <link rel="stylesheet" href="css/style.css"> <!-- Removed Thymeleaf syntax -->
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
-<h1>Welcome!</h1>
-<br/>
+<div class="dashboard">
+    <h1>Welcome, <%= username %>!</h1>
+    <a href="addProducts.jsp"> Add Products</a>
+    <a href="viewProducts"> Manage Products</a>
+    <a href="buyProduct"> Buy Products</a>
+    <a href="addCustomer.jsp"> Add Customers</a>
+    <a href="ViewCustomerServlet"> Manage Customers</a>
 
-<div class="wrapper">
-    <h1>Login</h1>
-
-
-    <p id="error-message" style="color:red;">
-        <%= request.getAttribute("errorMessage") != null ? request.getAttribute("errorMessage") : "" %>
-    </p>
-
-    <!-- The actual form -->
-    <form action="login" method="POST">
-        <div>
-            <label for="email-input">
-                <span>@</span>
-            </label>
-            <input type="email" name="username" id="email-input" placeholder="Email" required>
-        </div>
-        <div>
-            <label for="password-input"></label>
-            <input type="password" name="password" id="password-input" placeholder="Password" required>
-        </div>
-        <button type="submit">Login</button>
-    </form>
+    <div class="logout">
+        <p><a href="Login.jsp">Logout</a></p>
+    </div>
 </div>
-
-<a href="addProducts.jsp">Add ur Products!</a>
-<a href="viewProducts">View ur Products!</a>
-<a href="viewCustomers">View Customers</a>
-<a href="buyProduct">View Customers</a>
 </body>
 </html>

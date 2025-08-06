@@ -21,4 +21,18 @@ public class Customer {
 
     public int getUnitsConsumed() { return unitsConsumed; }
     public void setUnitsConsumed(int unitsConsumed) { this.unitsConsumed = unitsConsumed; }
+
+    public Customer() {
+        // No-args constructor (required for DAO code that uses setters)
+    }
+
+    public Customer(int accountNo, String name, String address, String phone, int unitsConsumed) {
+        this.accountNo = accountNo;
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        this.unitsConsumed = unitsConsumed;
+    }
+
 }
+

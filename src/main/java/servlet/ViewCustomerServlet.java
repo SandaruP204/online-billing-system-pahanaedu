@@ -11,7 +11,7 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/viewCustomers")
+@WebServlet("/ViewCustomerServlet")
 public class ViewCustomerServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -21,6 +21,6 @@ public class ViewCustomerServlet extends HttpServlet {
         List<Customer> customers = dao.getAllCustomers();
 
         request.setAttribute("customers", customers);
-        request.getRequestDispatcher("viewCustomers.jsp").forward(request, response);
+        request.getRequestDispatcher("customers.jsp").forward(request, response);
     }
 }
