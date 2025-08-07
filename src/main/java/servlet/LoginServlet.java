@@ -1,39 +1,44 @@
 package servlet;
 
+import dao.UserDAO;
+import model.User;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
+import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.sql.Connection;
+import dao.DBConnection; //
+
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    private final String USERNAME = "user@example.com";
-    private final String PASSWORD = "pass123";
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        if (USERNAME.equals(username) && PASSWORD.equals(password)) {
-            // Login successful, create session
-            HttpSession session = request.getSession();
-            session.setAttribute("username", username);
+        Connection conn = DBConnection.getConnection();
+        UserDAO userDAO = new UserDAO(conn);
 
-            // Redirect to index.jsp instead of addCustomer.jsp
-            response.sendRedirect("index.jsp");
+        User user = userDAO.login(username, password);
+
+        if (user != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("username", user.getUsername());
+            session.setAttribute("role", user.getRole());
+
+            if (user.getRole().equals("admin")) {
+                response.sendRedirect("index.jsp");
+            } else if (user.getRole().equals("employer")) {
+                response.sendRedirect("");
+            }
 
         } else {
-            // Login failed, back to login.jsp with error
             request.setAttribute("error", "Invalid username or password");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("Login.jsp").forward(request, response);
         }
     }
 }

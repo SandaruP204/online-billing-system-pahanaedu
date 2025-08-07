@@ -9,6 +9,7 @@
 <html>
 <head>
     <title>Add Your Products!</title>
+    <link rel="stylesheet" href="css/apstyle.css">
 </head>
 <body>
 <h2>Add New Products!</h2>

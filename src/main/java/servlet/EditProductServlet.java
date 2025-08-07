@@ -25,6 +25,6 @@ public class EditProductServlet extends HttpServlet {
         ProductDAO dao = new ProductDAO();
         dao.updateProduct(product); // Make sure this exists!
 
-        response.sendRedirect("ViewProductServlet");
+        response.sendRedirect("viewProducts");
     }
 }

@@ -11,7 +11,7 @@
     <h1>Login</h1>
 
     <%
-        String error = (String) request.getAttribute("errorMessage");
+        String error = (String) request.getAttribute("error");
         if (error != null) {
     %>
     <p id="error-message"><%= error %></p>
@@ -21,7 +21,7 @@
 
     <form action="login" method="post">
         <div class="input-box">
-            <input type="email" name="username" placeholder="Email" required>
+            <input type="text" name="username" placeholder="Email" required>
             <i class="bx bx-envelope"></i>
         </div>
 

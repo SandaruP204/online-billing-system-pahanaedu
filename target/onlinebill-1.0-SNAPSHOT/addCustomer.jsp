@@ -1,6 +1,9 @@
 <%@ page language="java" %>
 <html>
-<head><title>Add New Customer</title></head>
+<head>
+    <title>Add New Customer</title>
+    <link rel="stylesheet" href="css/acstyle.css">
+</head>
 <body>
 <h2>Add New Customer</h2>
 <form action="AddCustomerServlet" method="post">

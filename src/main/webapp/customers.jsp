@@ -4,7 +4,10 @@
 <%@ page import="java.util.Objects" %>
 
 <html>
-<head><title>All Customers</title></head>
+<head>
+  <title>Manage Customers</title>
+  <link rel="stylesheet" href="css/customer-style.css">
+</head>
 <body>
 <h1>All Customers</h1>
 

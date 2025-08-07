@@ -4,7 +4,8 @@
 
 <html>
 <head>
-  <title>Buy Product</title>
+  <title>Buy Products</title>
+  <link rel="stylesheet" href="css/buy-style.css">
 </head>
 <body>
 <h2>Buy Product</h2>

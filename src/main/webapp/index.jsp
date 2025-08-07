@@ -21,6 +21,7 @@
     <a href="buyProduct"> Buy Products</a>
     <a href="addCustomer.jsp"> Add Customers</a>
     <a href="ViewCustomerServlet"> Manage Customers</a>
+    <a href="add-employer.jsp"> Manage Employers</a>
 
     <div class="logout">
         <p><a href="Login.jsp">Logout</a></p>
