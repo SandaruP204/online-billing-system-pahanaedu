@@ -22,6 +22,11 @@
     <a href="addCustomer.jsp"> Add Customers</a>
     <a href="ViewCustomerServlet"> Manage Customers</a>
     <a href="add-employer.jsp"> Manage Employers</a>
+    <a href="addBill"> Order</a>
+    <a href="viewBills"> ViewOrder</a>
+    <a href="viewBill?bill_id=1">🧾 View Bill</a>
+
+
 
     <div class="logout">
         <p><a href="Login.jsp">Logout</a></p>

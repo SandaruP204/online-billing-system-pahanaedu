@@ -61,7 +61,7 @@ public class ProductDAO {
         return productList;
     }
 
-    public Product getProductByNo(int productNo) {
+    public static Product getProductByNo(int productNo) {
         Product product = null;
         try {
             Connection con = DBConnection.getConnection();

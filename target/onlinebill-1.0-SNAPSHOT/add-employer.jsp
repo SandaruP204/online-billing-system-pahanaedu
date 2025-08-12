@@ -8,7 +8,7 @@
 <h2>Add Employer</h2>
 
 <form action="addEmployer" method="post">
-  <label>Email:</label><br>
+  <label>Username:</label><br>
   <input type="text" name="username" required><br><br>
 
   <label>Password:</label><br>
