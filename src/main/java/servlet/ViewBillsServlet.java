@@ -18,6 +18,11 @@ public class ViewBillsServlet extends HttpServlet {
             BillDAO billDAO = new BillDAO();
             List<Bill> billList = billDAO.getAllBills();
 
+            // Populate customer names for all bills
+            for (Bill bill : billList) {
+                bill.setCustomerName(billDAO.getCustomerNameByAccountNo(bill.getAccountNo()));
+            }
+
             request.setAttribute("bills", billList);
             RequestDispatcher dispatcher = request.getRequestDispatcher("view_bills.jsp");
             dispatcher.forward(request, response);

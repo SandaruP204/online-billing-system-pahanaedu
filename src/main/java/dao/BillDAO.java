@@ -2,7 +2,6 @@ package dao;
 
 import model.Bill;
 import model.BillItem;
-import model.BillItemDetails;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,31 +10,55 @@ import java.util.List;
 
 public class BillDAO {
 
+    // Optional connection for testing
+    private Connection testConn = null;
+
+    // Production constructor
+    public BillDAO() {}
+
+    // Test constructor
+    public BillDAO(Connection conn) {
+        this.testConn = conn;
+    }
+
+    // Internal method to get connection
+    private Connection getConnection() throws Exception {
+        if (testConn != null) return testConn;
+        return DBConnection.getConnection();
+    }
+
     public int addBill(Bill bill) throws Exception {
         int generatedBillId = -1;
-        String insertBillSQL = "INSERT INTO bills (accountNo, bill_date) VALUES (?, ?)";
+
+        double totalAmount = 0;
+        for (BillItem item : bill.getItems()) {
+            double price = getProductPrice(item.getProductNo());
+            totalAmount += price * item.getQuantity();
+        }
+
+        String getCustomerNameSQL = "SELECT name FROM customers WHERE accountNo = ?";
+        String insertBillSQL = "INSERT INTO bills (accountNo, customer_name, bill_date, total_amount) VALUES (?, ?, ?, ?)";
         String insertItemSQL = "INSERT INTO bill_items (bill_id, productNo, quantity) VALUES (?, ?, ?)";
-        String checkCustomerSQL = "SELECT COUNT(*) FROM customers WHERE accountNo = ?";
         String checkProductSQL = "SELECT unit FROM products WHERE productNo = ?";
         String updateProductQtySQL = "UPDATE products SET unit = unit - ? WHERE productNo = ?";
 
-        try (Connection conn = DBConnection.getConnection()) {
+        try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
 
-            // 1. Validate customer exists
-            try (PreparedStatement psCheckCustomer = conn.prepareStatement(checkCustomerSQL)) {
-                psCheckCustomer.setInt(1, bill.getAccountNo());
-                try (ResultSet rs = psCheckCustomer.executeQuery()) {
+            // Get customer name
+            String customerName = "";
+            try (PreparedStatement psGetName = conn.prepareStatement(getCustomerNameSQL)) {
+                psGetName.setInt(1, bill.getAccountNo());
+                try (ResultSet rs = psGetName.executeQuery()) {
                     if (rs.next()) {
-                        int count = rs.getInt(1);
-                        if (count == 0) {
-                            throw new Exception("Customer with accountNo " + bill.getAccountNo() + " does not exist.");
-                        }
+                        customerName = rs.getString("name");
+                    } else {
+                        throw new Exception("Customer with accountNo " + bill.getAccountNo() + " does not exist.");
                     }
                 }
             }
 
-            // 2. Validate product existence and stock availability
+            // Validate product existence and stock availability
             for (BillItem item : bill.getItems()) {
                 try (PreparedStatement psCheckProduct = conn.prepareStatement(checkProductSQL)) {
                     psCheckProduct.setInt(1, item.getProductNo());
@@ -53,10 +76,12 @@ public class BillDAO {
                 }
             }
 
-            // 3. Insert bill
+            // Insert bill
             try (PreparedStatement psBill = conn.prepareStatement(insertBillSQL, Statement.RETURN_GENERATED_KEYS)) {
                 psBill.setInt(1, bill.getAccountNo());
-                psBill.setTimestamp(2, new Timestamp(bill.getBillDate().getTime()));
+                psBill.setString(2, customerName);
+                psBill.setTimestamp(3, new Timestamp(bill.getBillDate().getTime()));
+                psBill.setDouble(4, totalAmount);
                 int affectedRows = psBill.executeUpdate();
 
                 if (affectedRows == 0) {
@@ -74,18 +99,19 @@ public class BillDAO {
                 }
             }
 
-            // 4. Insert bill items and update product quantities
+            bill.setCustomerName(customerName);
+            bill.setTotalAmount(totalAmount);
+
+            // Insert items and update product quantities
             try (PreparedStatement psItem = conn.prepareStatement(insertItemSQL);
                  PreparedStatement psUpdateQty = conn.prepareStatement(updateProductQtySQL)) {
 
                 for (BillItem item : bill.getItems()) {
-                    // Insert bill item
                     psItem.setInt(1, generatedBillId);
                     psItem.setInt(2, item.getProductNo());
                     psItem.setInt(3, item.getQuantity());
                     psItem.addBatch();
 
-                    // Update product quantity
                     psUpdateQty.setInt(1, item.getQuantity());
                     psUpdateQty.setInt(2, item.getProductNo());
                     psUpdateQty.addBatch();
@@ -97,58 +123,37 @@ public class BillDAO {
 
             conn.commit();
         } catch (Exception e) {
-            throw e; // Let the servlet catch and display this
+            throw e;
         }
+
         return generatedBillId;
     }
 
+    public double getProductPrice(int productNo) throws SQLException, Exception {
+        double price = 0;
+        String sql = "SELECT price FROM products WHERE productNo = ?";
 
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-    // Get bill by ID (optional, can be implemented later)
-    public Bill getBill(int billId) {
-        Bill bill = null;
-        String selectBillSQL = "SELECT * FROM bills WHERE bill_id = ?";
-        String selectItemsSQL = "SELECT * FROM bill_items WHERE bill_id = ?";
+            ps.setInt(1, productNo);
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement psBill = conn.prepareStatement(selectBillSQL);
-             PreparedStatement psItems = conn.prepareStatement(selectItemsSQL)) {
-
-            psBill.setInt(1, billId);
-            ResultSet rsBill = psBill.executeQuery();
-
-            if (rsBill.next()) {
-                int accountNo = rsBill.getInt("accountNo");
-                Date billDate = new Date(rsBill.getTimestamp("bill_date").getTime());
-
-                psItems.setInt(1, billId);
-                ResultSet rsItems = psItems.executeQuery();
-                List<BillItem> items = new ArrayList<>();
-
-                while (rsItems.next()) {
-                    BillItem item = new BillItem(
-                            rsItems.getInt("item_id"),
-                            billId,
-                            rsItems.getInt("productNo"),
-                            rsItems.getInt("quantity")
-                    );
-                    items.add(item);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    price = rs.getDouble("price");
+                } else {
+                    throw new SQLException("Product with productNo " + productNo + " not found.");
                 }
-
-                bill = new Bill(billId, accountNo, billDate, items);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        return bill;
+        return price;
     }
 
-    public List<Bill> getAllBills() throws SQLException {
+    public List<Bill> getAllBills() throws SQLException, Exception {
         List<Bill> billList = new ArrayList<>();
-
         String sql = "SELECT * FROM bills";
-        try (Connection conn = DBConnection.getConnection();
+
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -157,6 +162,7 @@ public class BillDAO {
                 bill.setBillId(rs.getInt("bill_id"));
                 bill.setAccountNo(rs.getInt("accountNo"));
                 bill.setBillDate(rs.getTimestamp("bill_date"));
+                bill.setTotalAmount(rs.getDouble("total_amount"));
                 billList.add(bill);
             }
         }
@@ -164,16 +170,12 @@ public class BillDAO {
         return billList;
     }
 
-    public Bill getBillById(int billId) throws SQLException {
+    public Bill getBillById(int billId) throws SQLException, Exception {
         Bill bill = null;
+        String sql = "SELECT b.bill_id, b.accountNo, b.bill_date, c.name AS customer_name, b.total_amount " +
+                "FROM bills b JOIN customers c ON b.accountNo = c.accountNo WHERE b.bill_id = ?";
 
-        String sql = "SELECT b.bill_id, b.account_no, b.bill_date, c.name AS customer_name, " +
-                "b.total_amount " +
-                "FROM bills b " +
-                "JOIN customers c ON b.account_no = c.account_no " +
-                "WHERE b.bill_id = ?";
-
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, billId);
@@ -182,12 +184,10 @@ public class BillDAO {
                 if (rs.next()) {
                     bill = new Bill();
                     bill.setBillId(rs.getInt("bill_id"));
-                    bill.setAccountNo(rs.getInt("account_no"));
-                    bill.setBillDate(rs.getDate("bill_date"));
+                    bill.setAccountNo(rs.getInt("accountNo"));
+                    bill.setBillDate(rs.getTimestamp("bill_date"));
                     bill.setCustomerName(rs.getString("customer_name"));
                     bill.setTotalAmount(rs.getDouble("total_amount"));
-
-                    // Fetching the items is handled separately in BillItemDAO
                 }
             }
         }
@@ -195,5 +195,22 @@ public class BillDAO {
         return bill;
     }
 
+    public String getCustomerNameByAccountNo(int accountNo) throws SQLException, Exception {
+        String name = null;
+        String sql = "SELECT name FROM customers WHERE accountNo = ?";
 
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, accountNo);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    name = rs.getString("name");
+                }
+            }
+        }
+
+        return name;
+    }
 }

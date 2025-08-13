@@ -15,18 +15,21 @@ import java.util.List;
 @WebServlet("/viewBill")
 public class ViewSingleBillServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws ServletException, IOException {
         try {
             int billId = Integer.parseInt(request.getParameter("billId"));
 
             BillDAO billDAO = new BillDAO();
             Bill bill = billDAO.getBillById(billId);
 
+            // Ensure customer name is populated
+            bill.setCustomerName(billDAO.getCustomerNameByAccountNo(bill.getAccountNo()));
+
             BillItemDAO itemDAO = new BillItemDAO();
             List<BillItemDetails> billItems = itemDAO.getBillItems(billId);
 
             request.setAttribute("bill", bill);
-            request.setAttribute("billItems", billItems);
+            request.setAttribute("items", billItems);
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("viewSingleBill.jsp");
             dispatcher.forward(request, response);
@@ -36,6 +39,4 @@ public class ViewSingleBillServlet extends HttpServlet {
             response.sendRedirect("error.jsp?msg=Failed to retrieve bill details.");
         }
     }
-
-
 }

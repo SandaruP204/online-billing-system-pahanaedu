@@ -30,7 +30,8 @@
     </thead>
     <tbody>
     <%
-        for (BillItemDetails item : items) {
+        if (items != null) {
+            for (BillItemDetails item : items) {
     %>
     <tr>
         <td><%= item.getProductName() %></td>
@@ -39,6 +40,7 @@
         <td>$<%= item.getTotal() %></td>
     </tr>
     <%
+            }
         }
     %>
     </tbody>

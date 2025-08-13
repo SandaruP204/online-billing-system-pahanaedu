@@ -21,15 +21,22 @@ public class AddBillServlet extends HttpServlet {
         try {
             int accountNo = Integer.parseInt(request.getParameter("accountNo"));
 
-            // Assuming items are submitted as arrays (e.g., productNo[], quantity[])
             String[] productNos = request.getParameterValues("productNo");
             String[] quantities = request.getParameterValues("quantity");
 
             List<BillItem> items = new ArrayList<>();
+            double totalAmount = 0;
+
+            BillDAO billDAO = new BillDAO();  // instantiate early
+
             if (productNos != null && quantities != null) {
                 for (int i = 0; i < productNos.length; i++) {
                     int productNo = Integer.parseInt(productNos[i]);
                     int quantity = Integer.parseInt(quantities[i]);
+
+                    double unitPrice = billDAO.getProductPrice(productNo);  // get price from DB
+                    totalAmount += unitPrice * quantity;  // accumulate total
+
                     items.add(new BillItem(0, 0, productNo, quantity));
                 }
             }
@@ -38,14 +45,13 @@ public class AddBillServlet extends HttpServlet {
             bill.setAccountNo(accountNo);
             bill.setBillDate(new Date());
             bill.setItems(items);
+            bill.setTotalAmount(totalAmount);  // set total amount
 
-            BillDAO billDAO = new BillDAO();
             int billId = billDAO.addBill(bill);
 
             if (billId != -1) {
                 response.sendRedirect("success.jsp?msg=Bill created successfully. Bill ID: " + billId);
             } else {
-                // More informative error message
                 response.setContentType("text/plain");
                 response.getWriter().write("Failed to create bill for unknown reasons.");
             }
