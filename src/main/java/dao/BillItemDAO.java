@@ -1,6 +1,5 @@
 package dao;
 
-import model.Bill;
 import model.BillItemDetails;
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,7 +7,22 @@ import java.util.List;
 
 public class BillItemDAO {
 
-    public List<BillItemDetails> getBillItems(int billId) throws SQLException {
+    private Connection testConn = null;
+
+    // Production constructor
+    public BillItemDAO() {}
+
+    // Test constructor
+    public BillItemDAO(Connection conn) {
+        this.testConn = conn;
+    }
+
+    private Connection getConnection() throws Exception {
+        if (testConn != null) return testConn;
+        return DBConnection.getConnection();
+    }
+
+    public List<BillItemDetails> getBillItems(int billId) throws Exception {
         List<BillItemDetails> items = new ArrayList<>();
 
         String sql = "SELECT p.name AS productName, bi.quantity, p.price AS unitPrice, " +
@@ -17,7 +31,7 @@ public class BillItemDAO {
                 "JOIN products p ON bi.productNo = p.productNo " +
                 "WHERE bi.bill_id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, billId);
@@ -35,25 +49,4 @@ public class BillItemDAO {
 
         return items;
     }
-
-
-
-
-    // 🎯 Main method to quickly test
-    public static void main(String[] args) {
-        BillItemDAO dao = new BillItemDAO();
-        try {
-            List<BillItemDetails> items = dao.getBillItems(1); // test with billId = 1
-            for (BillItemDetails item : items) {
-                System.out.println("Product: " + item.getProductName());
-                System.out.println("Quantity: " + item.getQuantity());
-                System.out.println("Unit Price: " + item.getUnitPrice());
-                System.out.println("Total: " + item.getTotal());
-                System.out.println("----------------------------");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
