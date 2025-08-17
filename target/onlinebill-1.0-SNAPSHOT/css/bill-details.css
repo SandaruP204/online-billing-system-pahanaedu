@@ -1,0 +1,209 @@
+:root{
+    --bg:#0f1226;
+    --card:#171b34;
+    --text:#e9ecff;
+    --muted:#9aa3c5;
+    --border:rgba(255,255,255,.10);
+    --row:#11152b;
+    --row2:#10162f;
+    --accent:#6e9bff;
+    --ring:rgba(110,155,255,.45);
+    --link:#7df2c9;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font:15px/1.5 Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    background:
+            radial-gradient(1200px 600px at 10% -10%, rgba(110,155,255,.25), transparent 60%),
+            radial-gradient(1000px 800px at 120% 10%, rgba(125,242,201,.18), transparent 60%),
+            var(--bg);
+}
+
+/* Layout */
+.wrap{max-width:1100px;margin:48px auto;padding:0 20px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+h1{margin:0;font-weight:800;letter-spacing:.2px}
+
+/* Card */
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    overflow:hidden;
+    margin-bottom:16px;
+}
+
+/* Summary grid */
+.summary .summary-row{
+    display:grid; gap:14px;
+    grid-template-columns: repeat(4, minmax(160px,1fr));
+}
+.kv .k{display:block; font-size:12px; color:#c8cff2; text-transform:uppercase; letter-spacing:.3px}
+.kv .v{display:block; font-size:16px}
+.mono{font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.amt{font-weight:800}
+
+/* Table */
+.table-wrap{overflow:auto; border-radius:14px; border:1px solid var(--border)}
+table{
+    width:100%;
+    border-collapse:separate; border-spacing:0;
+    min-width:720px;
+}
+thead th{
+    text-align:left; font-weight:700; font-size:13px; letter-spacing:.3px; text-transform:uppercase;
+    color:#c8cff2; background:#0e1330;
+    position:sticky; top:0; z-index:1;
+    padding:12px 14px; border-bottom:1px solid var(--border);
+}
+tbody td, tfoot td{
+    padding:12px 14px; border-bottom:1px solid var(--border); color:#dfe4ff;
+}
+tbody tr:nth-child(odd){ background:var(--row) }
+tbody tr:nth-child(even){ background:var(--row2) }
+tbody tr:hover{ filter:brightness(1.07) }
+
+/* Alignment helpers */
+.num{text-align:right}
+.right{text-align:right}
+.strong{font-weight:800}
+.empty{padding:24px; text-align:center; color:var(--muted)}
+
+/* Button */
+.btn{
+    appearance:none; border:none; cursor:pointer;
+    padding:10px 14px; border-radius:12px; font-weight:700;
+    color:#0e1330; background:linear-gradient(135deg, var(--accent), #88b6ff);
+    box-shadow:0 10px 24px rgba(110,155,255,.35); text-decoration:none;
+}
+
+/* Responsive tweaks */
+@media (max-width: 800px){
+    .summary .summary-row{ grid-template-columns: repeat(2, 1fr) }
+}
+@media (max-width: 480px){
+    .summary .summary-row{ grid-template-columns: 1fr }
+}
+
+/* =========================
+   PRINT STYLES (A4 friendly)
+   ========================= */
+@media print {
+
+    /* Page setup */
+    @page {
+        size: A4;
+        margin: 18mm 14mm; /* inner margins */
+    }
+
+    /* Remove backgrounds, shadows, gradients */
+    :root {
+        --bg:#ffffff;
+        --card:#ffffff;
+        --text:#000000;
+        --muted:#333333;
+        --border:#000000;
+    }
+
+    html, body {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    .wrap {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .card {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        border-radius: 0;
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+
+    /* Hide non-essential UI */
+    .no-print { display: none !important; }
+
+    /* Show print-only banner */
+    .print-only { display: block !important; }
+
+    /* Typography & colors */
+    h1, h2, .kv .k, .kv .v, table, td, th {
+        color: #000 !important;
+    }
+
+    /* Tables: sharp borders, compact spacing */
+    .table-wrap {
+        border: 1px solid #000 !important;
+        border-radius: 0;
+        overflow: visible;
+    }
+
+    table {
+        min-width: 0;
+        width: 100%;
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+    }
+
+    thead th {
+        position: static; /* no sticky */
+        background: #fff !important;
+        border-bottom: 1px solid #000 !important;
+        padding: 6px 8px !important;
+        font-size: 12px !important;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+
+    tbody td, tfoot td {
+        border-bottom: 1px solid #000 !important;
+        padding: 6px 8px !important;
+        color: #000 !important;
+        font-size: 12px !important;
+    }
+
+    tbody tr:nth-child(odd),
+    tbody tr:nth-child(even) {
+        background: #fff !important; /* remove zebra */
+    }
+
+    /* Summary grid becomes two columns for space */
+    .summary .summary-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    /* Spacing tweaks */
+    .header { margin-bottom: 8px !important; }
+    .brand { font-weight: 800; font-size: 18px; }
+    .meta { font-size: 12px; margin-top: 2px; }
+
+    /* Avoid page breaks in the middle of the summary or totals row */
+    .summary, .table-wrap, table, thead, tbody, tfoot, tr, td, th {
+        page-break-inside: avoid;
+    }
+
+    /* Make totals stand out slightly */
+    .strong, .amt { font-weight: 700 !important; }
+
+    /* Remove gradients on buttons if any sneak into print */
+    .btn {
+        background: #fff !important; color: #000 !important; border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Default visibility helpers */
+.print-only { display: none; }
+.no-print { display: block; }

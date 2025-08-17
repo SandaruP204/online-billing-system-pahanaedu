@@ -1,0 +1,202 @@
+:root{
+    --bg:#0f1226;
+    --card:#171b34;
+    --text:#e9ecff;
+    --muted:#9aa3c5;
+    --border:rgba(255,255,255,.10);
+    --row:#11152b;
+    --row2:#10162f;
+    --accent:#6e9bff;
+    --ring:rgba(110,155,255,.45);
+    --link:#7df2c9;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font:15px/1.5 Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    background:
+            radial-gradient(1200px 600px at 10% -10%, rgba(110,155,255,.25), transparent 60%),
+            radial-gradient(1000px 800px at 120% 10%, rgba(125,242,201,.18), transparent 60%),
+            var(--bg);
+}
+
+/* Layout */
+.wrap{max-width:1100px;margin:48px auto;padding:0 20px}
+h2{margin:0 0 18px;font-weight:800;letter-spacing:.2px}
+
+/* Card container */
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    overflow:hidden;
+}
+
+/* Toolbar */
+.toolbar{
+    display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    margin-bottom:10px;
+}
+.toolbar .search{flex:1 1 260px; display:flex; gap:8px}
+.toolbar input[type="text"]{
+    width:100%;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:#11152b; color:var(--text);
+    outline:none;
+}
+.toolbar input[type="text"]:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px var(--ring);
+}
+
+/* Button */
+.btn{
+    appearance:none; border:none; cursor:pointer;
+    padding:10px 14px; border-radius:12px; font-weight:700;
+    color:#0e1330; background:linear-gradient(135deg, var(--accent), #88b6ff);
+    box-shadow:0 10px 24px rgba(110,155,255,.35); text-decoration:none;
+}
+
+/* Table */
+.table-wrap{overflow:auto; border-radius:14px; border:1px solid var(--border)}
+table{
+    width:100%;
+    border-collapse:separate; border-spacing:0;
+    min-width:720px;
+}
+thead th{
+    text-align:left; font-weight:700; font-size:13px; letter-spacing:.3px; text-transform:uppercase;
+    color:#c8cff2; background:#0e1330;
+    position:sticky; top:0; z-index:1;
+    padding:12px 14px; border-bottom:1px solid var(--border);
+}
+tbody td{
+    padding:12px 14px; border-bottom:1px solid var(--border); color:#dfe4ff;
+}
+tbody tr:nth-child(odd){ background:var(--row) }
+tbody tr:nth-child(even){ background:var(--row2) }
+tbody tr:hover{ filter:brightness(1.07) }
+
+.mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.amt{ font-weight:700; text-align:right; }
+.actions a{
+    color:var(--link); text-decoration:none; font-weight:600;
+    padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12);
+    background:#0f1736;
+}
+.actions a:hover{ border-color:var(--accent) }
+.empty{ padding:24px; text-align:center; color:var(--muted) }
+
+/* Responsive */
+@media (max-width: 720px){
+    .amt{ white-space:nowrap }
+    thead th:nth-child(3), tbody td:nth-child(3){ display:none } /* hide Bill Date on tiny screens */
+}
+:root{
+    --bg:#0f1226;
+    --card:#171b34;
+    --text:#e9ecff;
+    --muted:#9aa3c5;
+    --border:rgba(255,255,255,.10);
+    --row:#11152b;
+    --row2:#10162f;
+    --accent:#6e9bff;
+    --ring:rgba(110,155,255,.45);
+    --link:#7df2c9;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font:15px/1.5 Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    background:
+            radial-gradient(1200px 600px at 10% -10%, rgba(110,155,255,.25), transparent 60%),
+            radial-gradient(1000px 800px at 120% 10%, rgba(125,242,201,.18), transparent 60%),
+            var(--bg);
+}
+
+/* Layout */
+.wrap{max-width:1100px;margin:48px auto;padding:0 20px}
+h2{margin:0 0 18px;font-weight:800;letter-spacing:.2px}
+
+/* Card container */
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    overflow:hidden;
+}
+
+/* Toolbar */
+.toolbar{
+    display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    margin-bottom:10px;
+}
+.toolbar .search{flex:1 1 260px; display:flex; gap:8px}
+.toolbar input[type="text"]{
+    width:100%;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:#11152b; color:var(--text);
+    outline:none;
+}
+.toolbar input[type="text"]:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px var(--ring);
+}
+
+/* Button */
+.btn{
+    appearance:none; border:none; cursor:pointer;
+    padding:10px 14px; border-radius:12px; font-weight:700;
+    color:#0e1330; background:linear-gradient(135deg, var(--accent), #88b6ff);
+    box-shadow:0 10px 24px rgba(110,155,255,.35); text-decoration:none;
+}
+
+/* Table */
+.table-wrap{overflow:auto; border-radius:14px; border:1px solid var(--border)}
+table{
+    width:100%;
+    border-collapse:separate; border-spacing:0;
+    min-width:720px;
+}
+thead th{
+    text-align:left; font-weight:700; font-size:13px; letter-spacing:.3px; text-transform:uppercase;
+    color:#c8cff2; background:#0e1330;
+    position:sticky; top:0; z-index:1;
+    padding:12px 14px; border-bottom:1px solid var(--border);
+}
+tbody td{
+    padding:12px 14px; border-bottom:1px solid var(--border); color:#dfe4ff;
+}
+tbody tr:nth-child(odd){ background:var(--row) }
+tbody tr:nth-child(even){ background:var(--row2) }
+tbody tr:hover{ filter:brightness(1.07) }
+
+.mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.amt{ font-weight:700; text-align:right; }
+.actions a{
+    color:var(--link); text-decoration:none; font-weight:600;
+    padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12);
+    background:#0f1736;
+}
+.actions a:hover{ border-color:var(--accent) }
+.empty{ padding:24px; text-align:center; color:var(--muted) }
+
+/* Responsive */
+@media (max-width: 720px){
+    .amt{ white-space:nowrap }
+    thead th:nth-child(3), tbody td:nth-child(3){ display:none } /* hide Bill Date on tiny screens */
+}

@@ -1,6 +1,8 @@
 package servlet;
 
 import dao.CustomerDAO;
+import dao.impl.CustomerDAOimpl;
+
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,16 +13,41 @@ import java.io.IOException;
 @WebServlet("/DeleteCustomerServlet")
 public class DeleteCustomerServlet extends HttpServlet {
 
-    // Handles POST requests (e.g., from a form)
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int accountNo = Integer.parseInt(request.getParameter("accountNo"));
-        CustomerDAO dao = new CustomerDAO();
-        dao.deleteCustomer(accountNo);
-        response.sendRedirect("ViewCustomerServlet");
+    private CustomerDAO customerDAO;
+
+    @Override
+    public void init() {
+        this.customerDAO = new CustomerDAOimpl(); // program to the interface
     }
 
-    // Handles GET requests (e.g., from an <a href="..."> link)
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            String accountNoStr = request.getParameter("accountNo");
+            if (accountNoStr == null || accountNoStr.isBlank()) {
+                response.sendRedirect("ViewCustomerServlet?msg=Account number is required");
+                return;
+            }
+
+            int accountNo = Integer.parseInt(accountNoStr);
+            if (accountNo <= 0) {
+                response.sendRedirect("ViewCustomerServlet?msg=Invalid account number");
+                return;
+            }
+
+            customerDAO.deleteCustomer(accountNo);
+            response.sendRedirect("ViewCustomerServlet?msg=Customer deleted");
+
+        } catch (NumberFormatException nfe) {
+            response.sendRedirect("ViewCustomerServlet?msg=Account number must be a number");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("ViewCustomerServlet?msg=Failed to delete customer");
+        }
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        doPost(request, response); // Just call doPost and reuse the logic
+        doPost(request, response); // reuse logic
     }
 }

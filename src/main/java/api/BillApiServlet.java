@@ -1,6 +1,6 @@
 package api;
 
-import dao.BillDAO;
+import dao.impl.BillDAOImpl;
 import model.Bill;
 import model.BillItem;
 
@@ -18,7 +18,7 @@ import java.util.List;
 @WebServlet("/api/bills")
 public class BillApiServlet extends HttpServlet {
 
-    private BillDAO billDAO = new BillDAO();
+    private BillDAOImpl billDAOImpl = new BillDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,7 +31,7 @@ public class BillApiServlet extends HttpServlet {
 
             if (billIdParam != null) {
                 int billId = Integer.parseInt(billIdParam);
-                Bill bill = billDAO.getBillById(billId);
+                Bill bill = billDAOImpl.getBillById(billId);
                 if (bill != null) {
                     json.append("{")
                             .append("\"billId\":").append(bill.getBillId()).append(",")
@@ -44,7 +44,7 @@ public class BillApiServlet extends HttpServlet {
                     json.append("{}");
                 }
             } else {
-                List<Bill> bills = billDAO.getAllBills();
+                List<Bill> bills = billDAOImpl.getAllBills();
                 json.append("[");
                 for (int i = 0; i < bills.size(); i++) {
                     Bill b = bills.get(i);
@@ -82,7 +82,7 @@ public class BillApiServlet extends HttpServlet {
             bill.setBillDate(billDate);
             bill.setItems(items);
 
-            int generatedBillId = billDAO.addBill(bill);
+            int generatedBillId = billDAOImpl.addBill(bill);
 
             response.setContentType("application/json");
             response.getWriter().write("{\"success\":true,\"billId\":" + generatedBillId + "}");

@@ -1,6 +1,6 @@
 package api;
 
-import dao.CustomerDAO;
+import dao.impl.CustomerDAOimpl;
 import model.Customer;
 
 import jakarta.servlet.ServletException;
@@ -14,7 +14,7 @@ import java.util.List;
 @WebServlet("/api/customers")
 public class CustomerApiServlet extends HttpServlet {
 
-    private CustomerDAO customerDAO = new CustomerDAO();
+    private CustomerDAOimpl customerDAOimpl = new CustomerDAOimpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -26,7 +26,7 @@ public class CustomerApiServlet extends HttpServlet {
         if (accountParam != null) {
             // Get a single customer
             int accountNo = Integer.parseInt(accountParam);
-            Customer c = customerDAO.getCustomer(accountNo);
+            Customer c = customerDAOimpl.getCustomer(accountNo);
             if (c != null) {
                 response.getWriter().write(customerToJson(c));
             } else {
@@ -34,7 +34,7 @@ public class CustomerApiServlet extends HttpServlet {
             }
         } else {
             // Get all customers
-            List<Customer> customers = customerDAO.getAllCustomers();
+            List<Customer> customers = customerDAOimpl.getAllCustomers();
             StringBuilder json = new StringBuilder("[");
             for (int i = 0; i < customers.size(); i++) {
                 json.append(customerToJson(customers.get(i)));
@@ -60,7 +60,7 @@ public class CustomerApiServlet extends HttpServlet {
         customer.setPhone(phone);
         customer.setUnitsConsumed(unitsConsumed);
 
-        customerDAO.addCustomer(customer);
+        customerDAOimpl.addCustomer(customer);
 
         response.setContentType("application/json");
         response.getWriter().write("{\"success\":true}");
@@ -81,7 +81,7 @@ public class CustomerApiServlet extends HttpServlet {
         customer.setPhone(phone);
         customer.setUnitsConsumed(unitsConsumed);
 
-        customerDAO.updateCustomer(customer);
+        customerDAOimpl.updateCustomer(customer);
 
         response.setContentType("application/json");
         response.getWriter().write("{\"success\":true}");
@@ -90,7 +90,7 @@ public class CustomerApiServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int accountNo = Integer.parseInt(request.getParameter("accountNo"));
-        customerDAO.deleteCustomer(accountNo);
+        customerDAOimpl.deleteCustomer(accountNo);
 
         response.setContentType("application/json");
         response.getWriter().write("{\"success\":true}");

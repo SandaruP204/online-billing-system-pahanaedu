@@ -3,6 +3,7 @@
 <html>
 <head>
   <title>View Bills</title>
+  <link rel="stylesheet" href="css/view-bills.css">
 </head>
 <body>
 <h2>All Bills</h2>

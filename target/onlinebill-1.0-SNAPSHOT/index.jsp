@@ -18,7 +18,6 @@
     <h1>Welcome, <%= username %>!</h1>
     <a href="addProducts.jsp"> Add Products</a>
     <a href="viewProducts"> Manage Products</a>
-    <a href="buyProduct"> Buy Products</a>
     <a href="addCustomer.jsp"> Add Customers</a>
     <a href="ViewCustomerServlet"> Manage Customers</a>
     <a href="add-employer.jsp"> Manage Employers</a>

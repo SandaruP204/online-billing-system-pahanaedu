@@ -1,7 +1,8 @@
 package servlet;
 
 import dao.BillDAO;
-import dao.BillItemDAO;
+import dao.impl.BillDAOImpl;
+import dao.impl.BillItemDAOimpl;          // keeping your existing item DAO as-is
 import model.Bill;
 import model.BillItemDetails;
 
@@ -14,18 +15,43 @@ import java.util.List;
 
 @WebServlet("/viewBill")
 public class ViewSingleBillServlet extends HttpServlet {
+
+    private BillDAO billDAO;
+    private BillItemDAOimpl itemDAO;
+
+    @Override
+    public void init() throws ServletException {
+        this.billDAO = new BillDAOImpl();  // program to interface, instantiate impl
+        this.itemDAO = new BillItemDAOimpl();  // your existing concrete DAO
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        String billIdStr = request.getParameter("billId");
+        if (billIdStr == null || billIdStr.isBlank()) {
+            response.sendRedirect("error.jsp?msg=Missing billId.");
+            return;
+        }
+
         try {
-            int billId = Integer.parseInt(request.getParameter("billId"));
+            int billId = Integer.parseInt(billIdStr);
 
-            BillDAO billDAO = new BillDAO();
             Bill bill = billDAO.getBillById(billId);
+            if (bill == null) {
+                // Not found → friendly error
+                response.sendRedirect("error.jsp?msg=Bill not found.");
+                return;
+            }
 
-            // Ensure customer name is populated
-            bill.setCustomerName(billDAO.getCustomerNameByAccountNo(bill.getAccountNo()));
+            // If your DAO already populated customer_name, this is a no-op.
+            // Otherwise, fall back to a lookup by accountNo.
+            if (bill.getCustomerName() == null || bill.getCustomerName().isBlank()) {
+                String name = billDAO.getCustomerNameByAccountNo(bill.getAccountNo());
+                bill.setCustomerName(name);
+            }
 
-            BillItemDAO itemDAO = new BillItemDAO();
             List<BillItemDetails> billItems = itemDAO.getBillItems(billId);
 
             request.setAttribute("bill", bill);
@@ -34,6 +60,8 @@ public class ViewSingleBillServlet extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("viewSingleBill.jsp");
             dispatcher.forward(request, response);
 
+        } catch (NumberFormatException nfe) {
+            response.sendRedirect("error.jsp?msg=Invalid billId.");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp?msg=Failed to retrieve bill details.");

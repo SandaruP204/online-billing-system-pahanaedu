@@ -6,7 +6,7 @@
 <html>
 <head>
     <title>Manage Products</title>
-    <link rel="stylesheet" href="css/manage-products.css">
+    <link rel="stylesheet" href="css/manages-products.css">
 </head>
 <body>
 <h1>All Products</h1>
