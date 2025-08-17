@@ -60,10 +60,10 @@ public class AddCustomerServlet extends HttpServlet {
 
         } catch (NumberFormatException nfe) {
             request.setAttribute("error", "Account No and Units must be numbers.");
-            request.getRequestDispatcher("/addCustomer.jsp").forward(request, response);
+            request.getRequestDispatcher("/manage-customers.jsp").forward(request, response);
         } catch (IllegalArgumentException iae) {
             request.setAttribute("error", iae.getMessage());
-            request.getRequestDispatcher("/addCustomer.jsp").forward(request, response);
+            request.getRequestDispatcher("/manage-customers.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp?msg=Failed to add customer");

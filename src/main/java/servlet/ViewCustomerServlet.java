@@ -26,7 +26,7 @@ public class ViewCustomerServlet extends HttpServlet {
         try {
             List<Customer> customers = customerDAO.getAllCustomers();
             request.setAttribute("customers", customers);
-            request.getRequestDispatcher("customers.jsp").forward(request, response);
+            request.getRequestDispatcher("manage-customers.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp?msg=Failed to load customers");
