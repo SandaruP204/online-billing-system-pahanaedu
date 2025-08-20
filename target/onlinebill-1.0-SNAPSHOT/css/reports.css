@@ -1,0 +1,122 @@
+:root{
+    --bg:#0f1226;
+    --card:#171b34;
+    --text:#e9ecff;
+    --muted:#9aa3c5;
+    --border:rgba(255,255,255,.10);
+    --accent:#6e9bff;
+    --ring:rgba(110,155,255,.45);
+    --link:#7df2c9;
+    --tile1:#1a1f3d;
+    --tile2:#16223f;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font:15px/1.5 Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    background:
+            radial-gradient(1200px 600px at 10% -10%, rgba(110,155,255,.25), transparent 60%),
+            radial-gradient(1000px 800px at 120% 10%, rgba(125,242,201,.18), transparent 60%),
+            var(--bg);
+}
+
+.wrap{max-width:1120px;margin:32px auto;padding:0 20px}
+
+/* Top bar */
+.topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px;
+}
+.brand{
+    font-weight:900; letter-spacing:.5px; font-size:18px;
+    padding:10px 14px; border-radius:12px;
+    background:linear-gradient(135deg, #1e254d, #222a58);
+    border:1px solid var(--border);
+}
+.user{display:flex; gap:10px; align-items:center}
+.hello{color:#cfe0ff}
+.btn{
+    appearance:none; border:none; cursor:pointer;
+    padding:10px 14px; border-radius:12px; font-weight:800;
+    text-decoration:none; display:inline-block;
+}
+.btn.ghost{
+    color:#cfe0ff; background:transparent; border:1px solid var(--border);
+}
+.btn.ghost:hover{border-color:var(--accent)}
+
+/* Hero */
+.hero h1{margin:0 0 4px; font-size:28px; font-weight:900; letter-spacing:.3px}
+.muted{color:var(--muted)}
+
+/* Filter bar */
+.bar{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:var(--tile1); border:1px solid var(--border); border-radius:14px;
+    padding:12px 14px; margin-top:12px;
+}
+.bar label{display:flex; align-items:center; gap:8px}
+.input{
+    color:var(--text); background:var(--tile2);
+    border:1px solid var(--border); border-radius:12px;
+    padding:10px 12px; outline:none;
+}
+.input:focus{box-shadow:0 0 0 4px var(--ring); border-color:var(--accent)}
+.btn.accent{
+    background:var(--accent); color:#0c1228; font-weight:900; border:1px solid transparent;
+}
+.btn.accent:hover{filter:brightness(1.05)}
+
+/* Grid of KPI cards */
+.grid{
+    display:grid; gap:16px; margin-top:18px;
+    grid-template-columns: repeat(3, minmax(220px,1fr));
+}
+.card{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:18px; padding:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    min-height:120px; display:flex; flex-direction:column; gap:8px;
+}
+.card .icon{font-size:28px}
+.card h3{margin:0; font-size:16px; color:#cfe0ff}
+.card .value{margin-top:4px; font-size:22px; font-weight:900}
+
+/* Panels & tables */
+.panel{
+    margin-top:18px; background:var(--card);
+    border:1px solid var(--border); border-radius:18px; padding:14px 16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+.panel h3{margin:0 0 10px; font-size:18px}
+.table-wrap{overflow:auto; border-radius:12px; border:1px solid var(--border)}
+table{border-collapse:collapse; width:100%; min-width:560px; background:var(--tile1)}
+th,td{padding:10px 12px; border-bottom:1px solid var(--border); text-align:left}
+th{background:var(--tile2); color:#d7ddff; font-weight:800}
+tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+tfoot td{font-weight:800}
+
+/* Alerts */
+.alert{
+    padding:10px 12px; border-radius:12px; font-weight:700; margin-top:12px;
+    border:1px solid var(--border);
+}
+.alert.error{background:rgba(255,80,80,.08); color:#ff9c9c; border-color:rgba(255,80,80,.25)}
+.alert.success{background:rgba(76,226,160,.08); color:#7df2c9; border-color:rgba(76,226,160,.25)}
+
+/* Links & footer */
+.link{text-decoration:none; color:inherit}
+.link:hover{outline:1px solid var(--border); filter:brightness(1.06)}
+.foot{margin:22px 2px 6px}
+
+/* Responsive */
+@media (max-width: 920px){
+    .grid{grid-template-columns: repeat(2, minmax(220px,1fr))}
+}
+@media (max-width: 560px){
+    .topbar{flex-direction:column; align-items:flex-start; gap:10px}
+    .grid{grid-template-columns: 1fr}
+}

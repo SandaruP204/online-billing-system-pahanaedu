@@ -27,10 +27,15 @@
   <link rel="stylesheet" href="css/manages-products.css">
 </head>
 <body>
+
 <div class="wrap">
   <div class="header">
     <h1>Manage Products</h1>
     <a class="btn" href="viewProducts">↻ Refresh</a>
+    <button type="button" class="btn primary"
+            onclick="location.href='<%=request.getContextPath()%>/index.jsp'">
+      ← Back to Home
+    </button>
   </div>
 
   <!-- Add Product Card -->
@@ -40,19 +45,19 @@
       <div class="grid">
         <div class="field">
           <label for="productNo">Product Number</label>
-          <input id="productNo" type="number" name="productNo" required placeholder="e.g. 1001" min="1">
+          <input id="productNo" type="number" name="productNo" required placeholder="" min="1">
         </div>
         <div class="field">
           <label for="name">Name</label>
-          <input id="name" type="text" name="name" required placeholder="e.g. LED Bulb 9W">
+          <input id="name" type="text" name="name" required placeholder="">
         </div>
         <div class="field">
           <label for="unit">Quantity (Stock)</label>
-          <input id="unit" type="number" name="unit" required placeholder="e.g. 50" min="0">
+          <input id="unit" type="number" name="unit" required placeholder="" min="0">
         </div>
         <div class="field">
           <label for="price">Price</label>
-          <input id="price" type="number" name="price" required placeholder="e.g. 499.90" min="0" step="0.01">
+          <input id="price" type="number" name="price" required placeholder="" min="0" step="0.01">
         </div>
       </div>
       <div class="actions">

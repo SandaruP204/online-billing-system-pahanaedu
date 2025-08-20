@@ -1,15 +1,10 @@
 package servlet;
 
-import dao.BillDAO;
 import dao.CustomerDAO;
 import dao.ProductDAO;
-
-import dao.impl.BillDAOImpl;
 import dao.impl.CustomerDAOimpl;
 import dao.impl.ProductDAOimpl;
 
-import model.Bill;
-import model.BillItem;
 import model.Customer;
 import model.Product;
 
@@ -19,22 +14,23 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import service.BillingService;
+import service.impl.BillingServiceImpl;
 
 @WebServlet("/addBill")
 public class AddBillServlet extends HttpServlet {
 
-    private BillDAO billDAO;
     private CustomerDAO customerDAO;
-    private ProductDAO productDAO;
+    private ProductDAO  productDAO;
+    private BillingService billing; // <-- business layer
 
     @Override
     public void init() throws ServletException {
-        // Program to interfaces; use impls underneath
-        this.billDAO     = new BillDAOImpl();
         this.customerDAO = new CustomerDAOimpl();
         this.productDAO  = new ProductDAOimpl();
+        this.billing     = new BillingServiceImpl(); // <-- use the service layer
     }
 
     // ------- GET: show form with preloaded suggestions -------
@@ -42,26 +38,22 @@ public class AddBillServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         try {
-            List<Customer> customers = customerDAO.getAllCustomers();
-            List<Product>  products  = productDAO.getAllProducts();
-
-            request.setAttribute("customers", customers);
-            request.setAttribute("products",  products);
-
-            // forward (not redirect) so attributes are available
-            RequestDispatcher rd = request.getRequestDispatcher("addBill.jsp");
-            rd.forward(request, response);
-
+            request.setAttribute("customers", customerDAO.getAllCustomers());
+            request.setAttribute("products",  productDAO.getAllProducts());
+            request.getRequestDispatcher("addBill.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp?msg=Failed to load Add Bill form");
         }
     }
 
-    // ------- POST: create bill (your validated logic kept) -------
+    // ------- POST: create bill via BillingService (atomic, no negative stock) -------
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        final String ctx = request.getContextPath();
+
         try {
             // Parse customer/account
             String accountNoStr = request.getParameter("accountNo");
@@ -70,73 +62,66 @@ public class AddBillServlet extends HttpServlet {
             }
             int accountNo = Integer.parseInt(accountNoStr);
 
-            // Parse arrays (may include blanks if the form has extra rows)
+            // Parse arrays (skip blank rows)
             String[] productNos = request.getParameterValues("productNo");
             String[] quantities = request.getParameterValues("quantity");
-
-            List<BillItem> items = new ArrayList<>();
-
-            if (productNos != null && quantities != null) {
-                int len = Math.min(productNos.length, quantities.length);
-                for (int i = 0; i < len; i++) {
-                    String pStr = productNos[i];
-                    String qStr = quantities[i];
-
-                    // skip empty lines
-                    if (pStr == null || pStr.isBlank() || qStr == null || qStr.isBlank()) continue;
-
-                    int productNo = Integer.parseInt(pStr);
-                    int quantity  = Integer.parseInt(qStr);
-
-                    if (productNo <= 0) {
-                        throw new IllegalArgumentException("Invalid product number at row " + (i + 1));
-                    }
-                    if (quantity <= 0) {
-                        throw new IllegalArgumentException("Quantity must be > 0 at row " + (i + 1));
-                    }
-
-                    // Price/total computed in DAO from DB prices
-                    items.add(new BillItem(0, 0, productNo, quantity));
-                }
+            if (productNos == null || quantities == null || productNos.length == 0) {
+                throw new IllegalArgumentException("Please add at least one product to the bill.");
+            }
+            if (productNos.length != quantities.length) {
+                throw new IllegalArgumentException("Product and quantity rows do not match.");
             }
 
-            if (items.isEmpty()) {
+            List<BillingService.Line> lines = new ArrayList<>();
+            for (int i = 0; i < productNos.length; i++) {
+                String pStr = productNos[i];
+                String qStr = quantities[i];
+                if (pStr == null || pStr.isBlank() || qStr == null || qStr.isBlank()) continue; // ignore empty row
+
+                int productNo = Integer.parseInt(pStr);
+                int qty       = Integer.parseInt(qStr);
+
+                if (productNo <= 0) throw new IllegalArgumentException("Invalid product number at row " + (i + 1));
+                if (qty <= 0)       throw new IllegalArgumentException("Quantity must be > 0 at row " + (i + 1));
+
+                lines.add(new BillingService.Line(productNo, qty));
+            }
+            if (lines.isEmpty()) {
                 throw new IllegalArgumentException("Please add at least one product to the bill.");
             }
 
-            // Build Bill
-            Bill bill = new Bill();
-            bill.setAccountNo(accountNo);
-            bill.setBillDate(new Date());
-            bill.setItems(items);
+            // Create bill (service manages transaction + stock checks)
+            int billId = billing.createBill(accountNo, lines);
 
-            int billId = billDAO.addBill(bill);
-
-            if (billId != -1) {
-                response.sendRedirect("success.jsp?msg=Bill created successfully. Bill ID=" + billId);
-            } else {
-                response.setContentType("text/plain");
-                response.getWriter().write("Failed to create bill for unknown reasons.");
-            }
+            // success → flash + redirect (adjust destination if your mapping differs)
+            request.getSession(true).setAttribute("flash_success", "Bill created successfully (ID #" + billId + ").");
+            response.sendRedirect(ctx + "/viewBill?billId=" + billId); // or ctx + "/ViewBillsServlet" / your page
+            return;
 
         } catch (NumberFormatException nfe) {
-            response.setContentType("text/plain");
-            response.getWriter().write("Invalid number in form: " + nfe.getMessage());
+            request.setAttribute("error", "Please enter valid numbers.");
+            reloadFormAndForward(request, response);
+        } catch (BillingService.InsufficientStockException ise) {
+            // Friendly message; nothing was inserted/updated (rolled back)
+            request.setAttribute("error", ise.getMessage());
+            reloadFormAndForward(request, response);
         } catch (IllegalArgumentException iae) {
-            // Re-show form with error + preloaded lists so user can fix quickly
-            try {
-                request.setAttribute("error", iae.getMessage());
-                request.setAttribute("customers", customerDAO.getAllCustomers());
-                request.setAttribute("products",  productDAO.getAllProducts());
-                request.getRequestDispatcher("addBill.jsp").forward(request, response);
-            } catch (Exception fwdEx) {
-                response.setContentType("text/plain");
-                response.getWriter().write("Error: " + iae.getMessage());
-            }
+            request.setAttribute("error", iae.getMessage());
+            reloadFormAndForward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            response.setContentType("text/plain");
-            response.getWriter().write("Error occurred while creating bill: " + e.getMessage());
+            // You can send to a generic error page or use flash
+            request.getSession(true).setAttribute("flash_error", "Failed to create bill. Please try again.");
+            response.sendRedirect(ctx + "/addBill");
         }
+    }
+
+    private void reloadFormAndForward(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            request.setAttribute("customers", customerDAO.getAllCustomers());
+            request.setAttribute("products",  productDAO.getAllProducts());
+        } catch (Exception ignore) {}
+        request.getRequestDispatcher("addBill.jsp").forward(request, response);
     }
 }

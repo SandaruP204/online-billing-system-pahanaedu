@@ -20,62 +20,95 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        // Program to the interface; impl handles its own DB connections
         this.userDAO = new UserDAOimpl();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        final String ctx = request.getContextPath();
+        // If already logged in, don't show the login page again.
+        HttpSession s = request.getSession(false);
+        boolean loggedIn = s != null && (s.getAttribute("authUser") != null || s.getAttribute("username") != null);
+        if (loggedIn) {
+            String intended = (String) s.getAttribute("intended");
+            s.removeAttribute("intended");
+            String dest = (isSafeRelativePath(intended)) ? intended : "/index.jsp";
+            response.sendRedirect(ctx + dest);
+            return;
+        }
+
+        // Otherwise, render the login page
+        request.getRequestDispatcher("Login.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        try {
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
+        final String ctx = request.getContextPath();
 
-            if (username == null || username.isBlank() || password == null || password.isBlank()) {
-                request.setAttribute("error", "Username and password are required.");
-                request.getRequestDispatcher("Login.jsp").forward(request, response);
+        try {
+            String username = trimOrEmpty(request.getParameter("username"));
+            String password = trimOrEmpty(request.getParameter("password"));
+
+            if (username.isEmpty() || password.isEmpty()) {
+                request.getSession(true).setAttribute("flash_error", "Username and password are required.");
+                response.sendRedirect(ctx + "/Login.jsp");
                 return;
             }
 
-            // Hash + verify (inside DAO)
             boolean ok = userDAO.validateLogin(username, password);
             if (!ok) {
-                request.setAttribute("error", "Invalid username or password");
-                request.getRequestDispatcher("Login.jsp").forward(request, response);
+                request.getSession(true).setAttribute("flash_error", "Invalid username or password.");
+                response.sendRedirect(ctx + "/Login.jsp");
                 return;
             }
 
-            // Load full user (id, role, etc.)
             User user = userDAO.findByUsername(username);
             if (user == null) {
-                request.setAttribute("error", "User record not found.");
-                request.getRequestDispatcher("Login.jsp").forward(request, response);
+                request.getSession(true).setAttribute("flash_error", "User record not found.");
+                response.sendRedirect(ctx + "/Login.jsp");
                 return;
             }
 
-            HttpSession session = request.getSession();
-            session.setAttribute("username", user.getUsername());
-            session.setAttribute("role", user.getRole());
+            HttpSession session = request.getSession(true);
+            session.setAttribute("authUser", user);               // key the AuthFilter checks
+            session.setAttribute("username", user.getUsername()); // optional
+            session.setAttribute("role", user.getRole());         // optional
+            session.setMaxInactiveInterval(30 * 60);              // 30 mins
 
-            // Normalize role handling (supports ADMIN/admin/Employer/etc.)
-            String role = user.getRole();
-            String norm = role == null ? "" : role.trim().toUpperCase();
+            session.setAttribute("flash_success", "Welcome, " + user.getUsername() + "! Logged in successfully.");
 
-            if ("ADMIN".equals(norm)) {
-                response.sendRedirect("index.jsp");
-            } else if ("EMPLOYER".equals(norm)) {
-                // TODO: set your employer landing
-                response.sendRedirect("employer-dashboard.jsp");
-            } else {
-                // Fallback if an unexpected role sneaks in
-                response.sendRedirect("index.jsp");
-            }
+            String intended = (String) session.getAttribute("intended");
+            session.removeAttribute("intended");
+
+            String normRole = (user.getRole() == null ? "" : user.getRole().trim().toUpperCase());
+            boolean isEmployer = "EMPLOYER".equals(normRole) || "CASHIER".equals(normRole);
+
+            String fallback = isEmployer ? "/employer-dashboard.jsp" : "/index.jsp";
+            String dest = (isSafeRelativePath(intended)) ? intended : fallback;
+
+            response.sendRedirect(ctx + dest);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Something went wrong. Please try again.");
-            request.getRequestDispatcher("Login.jsp").forward(request, response);
+            request.getSession(true).setAttribute("flash_error", "Something went wrong. Please try again.");
+            response.sendRedirect(ctx + "/Login.jsp");
         }
+    }
+
+    // ---------- helpers ----------
+    private static String trimOrEmpty(String s) {
+        return (s == null) ? "" : s.trim();
+    }
+
+    private static boolean isSafeRelativePath(String p) {
+        if (p == null || p.isBlank()) return false;
+        if (!p.startsWith("/")) return false;
+        if (p.startsWith("//")) return false;
+        if (p.contains("\r") || p.contains("\n")) return false;
+        return true;
     }
 }

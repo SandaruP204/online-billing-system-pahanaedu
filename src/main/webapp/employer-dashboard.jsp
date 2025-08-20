@@ -64,6 +64,13 @@
     </a>
   </section>
 
+  <a class="card link" href="help.jsp">
+    <div class="icon">❓</div>
+    <h3>Help & Support</h3>
+    <p>Find guidance on using the system.</p>
+    <span class="cta">Open →</span>
+  </a>
+
   <section class="quick-actions">
     <h2>Quick Actions</h2>
     <div class="qa-grid">

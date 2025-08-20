@@ -23,10 +23,26 @@
   <link rel="stylesheet" href="css/manage-customers.css">
 </head>
 <body>
+<button type="button"
+        onclick="location.href='<%=request.getContextPath()%>/index.jsp'">
+  ← Back to Home
+</button>
+
 <div class="wrap">
   <div class="header">
     <h1>Manage Customers</h1>
     <a class="btn" href="ViewCustomerServlet">↻ Refresh</a>
+    <%
+      String role = (String) session.getAttribute("role");
+      boolean isEmployer = role != null &&
+              (role.equalsIgnoreCase("EMPLOYER") || role.equalsIgnoreCase("CASHIER"));
+      String home = isEmployer ? "employer-dashboard.jsp" : "index.jsp";
+    %>
+    <button type="button" class="btn primary"
+            onclick="location.href='<%=request.getContextPath()%>/<%= home %>'">
+      ← Back to Home
+    </button>
+
   </div>
 
   <!-- Add Customer -->
@@ -36,27 +52,27 @@
       <div class="grid">
         <div class="field">
           <label for="accountNo">Account Number</label>
-          <input id="accountNo" type="number" name="accountNo" required placeholder="e.g. 50001" min="1">
+          <input id="accountNo" type="number" name="accountNo" required placeholder="" min="1">
         </div>
 
         <div class="field">
           <label for="name">Name</label>
-          <input id="name" type="text" name="name" required placeholder="e.g. Kasun Perera">
+          <input id="name" type="text" name="name" required placeholder="">
         </div>
 
         <div class="field">
           <label for="address">Address</label>
-          <input id="address" type="text" name="address" required placeholder="e.g. 12 Temple Rd, Kandy">
+          <input id="address" type="text" name="address" required placeholder="">
         </div>
 
         <div class="field">
           <label for="phone">Phone</label>
-          <input id="phone" type="text" name="phone" required placeholder="e.g. 0771234567">
+          <input id="phone" type="text" name="phone" required placeholder="">
         </div>
 
         <div class="field">
           <label for="unitsConsumed">Units Consumed</label>
-          <input id="unitsConsumed" type="number" name="unitsConsumed" required placeholder="e.g. 120" min="0">
+          <input id="unitsConsumed" type="number" name="unitsConsumed" required placeholder="" min="0">
         </div>
       </div>
 

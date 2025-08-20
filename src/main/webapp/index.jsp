@@ -24,11 +24,12 @@
         <div class="brand">Pahana Admin</div>
         <div class="user">
             <span class="hello">Hi, <strong><%= displayName %></strong></span>
-            <a class="btn ghost" href="Login.jsp">Logout</a>
+            <a class="btn ghost" href="logout">Logout</a>
             <%-- If you have a LogoutServlet that invalidates the session, use it:
                  <a class="btn ghost" href="logout">Logout</a>
             --%>
         </div>
+        <%@ include file="/flash.jspf" %>
     </header>
 
     <section class="hero">
@@ -73,6 +74,22 @@
             <p>Add new employer accounts.</p>
             <span class="cta">Open →</span>
         </a>
+
+        <a class="card link" href="help.jsp">
+            <div class="icon">❓</div>
+            <h3>Help & Support</h3>
+            <p>Find guidance on using the system.</p>
+            <span class="cta">Open →</span>
+        </a>
+
+        <a class="card link" href="reports/monthly">
+            <div class="icon">📊</div>
+            <h3>Monthly Report</h3>
+            <p>Revenue, bill counts, daily totals.</p>
+            <span class="cta">Open →</span>
+        </a>
+
+
     </section>
 
     <footer class="foot">

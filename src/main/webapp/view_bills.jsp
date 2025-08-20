@@ -7,6 +7,17 @@
 </head>
 <body>
 <h2>All Bills</h2>
+<%
+  String role = (String) session.getAttribute("role");
+  boolean isEmployer = role != null &&
+          (role.equalsIgnoreCase("EMPLOYER") || role.equalsIgnoreCase("CASHIER"));
+  String home = isEmployer ? "employer-dashboard.jsp" : "index.jsp";
+%>
+<button type="button" class="btn primary"
+        onclick="location.href='<%=request.getContextPath()%>/<%= home %>'">
+  ← Back to Home
+</button>
+
 <table border="1">
   <tr>
     <th>Bill ID</th>

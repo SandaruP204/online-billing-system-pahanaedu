@@ -25,12 +25,39 @@
   <meta charset="UTF-8">
   <title>Add Bill</title>
   <link rel="stylesheet" href="css/add-bill.css">
+  <!-- fallback styles for alerts if your CSS doesn't define them -->
+  <style>
+    .alert{padding:10px 12px;border-radius:12px;font-weight:700;margin:10px 0;border:1px solid #e6e8ef}
+    .alert.error{background:#fdeaea;color:#7f1d1d;border-color:#f2a0a0}
+    .alert.success{background:#e7f8ee;color:#065f46;border-color:#9ad4b2}
+  </style>
 </head>
 <body>
 <div class="page">
-  <h1>Create Bill</h1>
+  <%-- Flash messages (survive redirects) --%>
 
-  <form class="card" id="billForm" action="addBill" method="post">
+  <%-- Option A: request-scoped messages when we FORWARD back here --%>
+  <% if (request.getAttribute("success") != null) { %>
+  <div class="alert success"><%= request.getAttribute("success") %></div>
+  <% } %>
+  <% if (request.getAttribute("error") != null) { %>
+  <div class="alert error"><%= request.getAttribute("error") %></div>
+  <% } %>
+
+  <h1>Create Bill</h1>
+    <%
+      String role = (String) session.getAttribute("role");
+      boolean isEmployer = role != null &&
+              (role.equalsIgnoreCase("EMPLOYER") || role.equalsIgnoreCase("CASHIER"));
+      String home = isEmployer ? "employer-dashboard.jsp" : "index.jsp";
+    %>
+    <button type="button" class="btn primary"
+            onclick="location.href='<%=request.getContextPath()%>/<%= home %>'">
+      ← Back to Home
+    </button>
+
+
+    <form class="card" id="billForm" action="addBill" method="post">
     <!-- Customer -->
     <div class="field">
       <label for="customerInput">Customer</label>
@@ -93,7 +120,6 @@
     window.PRODUCTS = list;
   })();
 
-  // client-side HTML escaper for dynamic UI
   function escapeHtml(str){
     return (str||"").replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
   }
@@ -104,7 +130,6 @@
   var custPicked= document.getElementById('customerPicked');
 
   custInput.addEventListener('change', function () {
-    // Expecting "12345 - Name"
     var m = custInput.value.match(/^(\d+)\s*-\s*(.+)$/);
     if (m) {
       accountNo.value = m[1];
@@ -121,7 +146,6 @@
   var rows = document.getElementById('rows');
   document.getElementById('addRowBtn').addEventListener('click', addRow);
 
-  // Build products datalist once (from PRODUCTS)
   var dl = document.createElement('datalist');
   dl.id = 'productsList';
   dl.innerHTML = (window.PRODUCTS || []).map(function(p){
@@ -130,7 +154,6 @@
   }).join('');
   document.body.appendChild(dl);
 
-  // Add initial row
   addRow();
 
   function addRow(){
@@ -155,7 +178,6 @@
     var removeBtn = row.querySelector('.remove');
 
     prodInput.addEventListener('change', function () {
-      // Expecting "1001 - Name (..."
       var m = prodInput.value.match(/^(\d+)\s*-\s*(.+)$/);
       if (!m) { clearRow(); updateTotals(); return; }
       var no = parseInt(m[1],10);
@@ -183,7 +205,6 @@
       prodPrice.value = '';
       lineTotal.textContent = '0.00';
     }
-
     function updateLine(){
       var q = parseInt(qty.value || '1',10);
       var pr = parseFloat(prodPrice.value || '0');
@@ -202,7 +223,6 @@
     document.getElementById('grandTotal').textContent = sum.toFixed(2);
   }
 
-  // Final client-side sanity
   document.getElementById('billForm').addEventListener('submit', function (e) {
     if (!accountNo.value) {
       e.preventDefault(); alert('Please choose a customer from the list.'); return;

@@ -20,6 +20,7 @@
     <div class="card">
         <div class="header">
             <h2>Add Employer</h2>
+            <a class="btn ghost" href="index.jsp">Back</a>
         </div>
 
         <form action="addEmployer" method="post" class="form">

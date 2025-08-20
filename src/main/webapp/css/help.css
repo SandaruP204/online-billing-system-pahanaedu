@@ -1,0 +1,43 @@
+:root{
+    --bg:#0f1226; --card:#171b34; --text:#e9ecff; --muted:#9aa3c5;
+    --border:rgba(255,255,255,.10); --accent:#6e9bff; --ring:rgba(110,155,255,.45);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0; font:15px/1.5 Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
+    background:
+            radial-gradient(1200px 600px at 10% -10%, rgba(110,155,255,.25), transparent 60%),
+            radial-gradient(1000px 800px at 120% 10%, rgba(125,242,201,.18), transparent 60%),
+            var(--bg);
+}
+.wrap{max-width:900px;margin:32px auto;padding:0 20px}
+.top{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{margin:0 0 6px;font-weight:900;letter-spacing:.3px}
+.card{
+    background:var(--card); border:1px solid var(--border); border-radius:18px;
+    padding:16px; margin-bottom:12px; box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+.btn{
+    appearance:none; border:none; cursor:pointer; padding:10px 14px; border-radius:12px;
+    font-weight:800; text-decoration:none; display:inline-block;
+}
+.btn.primary{
+    color:#0e1330; background:linear-gradient(135deg, var(--accent), #88b6ff);
+    box-shadow:0 10px 24px rgba(110,155,255,.35);
+}
+.btn.ghost{color:#cfe0ff;background:transparent;border:1px solid var(--border)}
+.btn.ghost:hover{border-color:var(--accent)}
+.muted{color:var(--muted)}
+.foot{margin-top:10px}
+
+/* PRINT */
+@media print {
+    body { background:#fff; color:#000; }
+    .top .btn { display:none; }
+    .card {
+        background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow:none;
+        color:#000;
+    }
+    a { color:#000; text-decoration:none; }
+}

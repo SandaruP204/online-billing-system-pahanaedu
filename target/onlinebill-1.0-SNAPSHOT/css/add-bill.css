@@ -74,3 +74,4 @@ input[type="text"]:focus, input[type="number"]:focus{border-color:var(--accent);
 .totals{margin:14px 0;display:flex;gap:8px;justify-content:flex-end;align-items:center;font-size:18px}
 .actions{display:flex;justify-content:flex-end}
 hr{border:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);margin:18px 0}
+

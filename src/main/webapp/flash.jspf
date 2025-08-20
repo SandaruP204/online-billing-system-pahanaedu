@@ -1,0 +1,43 @@
+<%
+  String ok  = (String) session.getAttribute("flash_success");
+  String err = (String) session.getAttribute("flash_error");
+  boolean hasFlash = (ok != null) || (err != null);
+%>
+<% if (hasFlash) { %>
+<div id="flashBox" class="flash-box">
+  <% if (ok != null) { %>
+  <div class="alert success"><%= ok %></div>
+  <% session.removeAttribute("flash_success"); %>
+  <% } %>
+  <% if (err != null) { %>
+  <div class="alert error"><%= err %></div>
+  <% session.removeAttribute("flash_error"); %>
+  <% } %>
+</div>
+<style>
+  .alert{padding:10px 12px;border-radius:12px;font-weight:700;margin:10px 0;border:1px solid #e6e8ef}
+  .alert.error{background:#fdeaea;color:#7f1d1d;border-color:#f2a0a0}
+  .alert.success{background:#e7f8ee;color:#065f46;border-color:#9ad4b2}
+  .flash-box{transition:opacity .3s ease, transform .3s ease}
+  .flash-box.fade-out{opacity:0; transform: translateY(-4px)}
+</style>
+<script>
+  (function(){
+    var box = document.getElementById('flashBox');
+    if (!box) return;
+    // Auto-dismiss after ~2.5s
+    setTimeout(function(){
+      box.classList.add('fade-out');
+      setTimeout(function(){ if (box && box.parentNode) box.parentNode.removeChild(box); }, 320);
+    }, 2500);
+
+    // If page is restored from back-forward cache, nuke stale flash
+    window.addEventListener('pageshow', function(e){
+      if (e.persisted) {
+        var b = document.getElementById('flashBox');
+        if (b && b.parentNode) b.parentNode.removeChild(b);
+      }
+    });
+  })();
+</script>
+<% } %>

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/buy-style.css">
 </head>
 <body>
+
 <h2>Buy Product</h2>
 
 <form action="buyProduct" method="post">
