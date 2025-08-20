@@ -45,21 +45,30 @@ The system is designed for bookshops (Pahana Edu) to efficiently manage **custom
 
 ```
 onlinebill/
- ├── src/
- │   ├── dao/              # DAO Interfaces
- │   ├── dao/impl/         # DAO Implementations
- │   ├── model/            # Entity classes
- │   ├── servlet/          # Servlets (Controllers / API layer)
- │   └── utils/            # DB Connection, helpers
- ├── web/                  # JSP pages
- │   ├── customers.jsp
- │   ├── products.jsp
- │   ├── bills.jsp
- │   └── ...
- ├── test/                 # JUnit tests
- ├── sql/                  # Database schema and seed data
- ├── README.md             # Documentation (this file)
- └── pom.xml / build.xml   # Build configuration (if Maven/Ant used)
+ ├─ src/
+ │  ├─ main/
+ │  │  ├─ java/
+ │  │  │  ├─ Auth/                # AuthFilter
+ │  │  │  ├─ dao/                 # DAO interfaces
+ │  │  │  ├─ dao/impl/            # JDBC implementations
+ │  │  │  ├─ model/               # POJOs (User, Product, Customer, Bill…)
+ │  │  │  ├─ servlet/             # Servlets (controllers & API)
+ │  │  │  └─ utils/               # DB/JNDI helpers, validators
+ │  │  └─ webapp/
+ │  │     ├─ index.jsp            # Admin dashboard
+ │  │     ├─ employer-dashboard.jsp
+ │  │     ├─ manage-products.jsp
+ │  │     ├─ manage-customers.jsp
+ │  │     ├─ addBill.jsp
+ │  │     ├─ view_bills.jsp
+ │  │     ├─ viewSingleBill.jsp
+ │  │     ├─ Login.jsp
+ │  │     ├─ WEB-INF/web.xml
+ │  │     └─ (includes/, css/, etc. if present)
+ │  └─ test/                      # JUnit tests
+ ├─ pom.xml                       # Maven (WAR)
+ └─ target/                       # Build output
+
 ```
 
 ---
@@ -73,14 +82,11 @@ onlinebill/
    ```
 
 2. **Database Setup**
-   - Create a MySQL database:
-     ```sql
-     CREATE DATABASE onlinebill;
-     ```
-   - Import schema:
-     ```bash
-     mysql -u root -p onlinebill < sql/schema.sql
-     ```
+```bash
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS pahana"
+mysql -u root -p pahana < sql/001_schema.sql
+mysql -u root -p pahana < sql/010_seed.sql
+
 
 3. **Configure Database Connection**
    - Edit `DBConnection.java` with your DB username & password.
