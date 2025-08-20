@@ -68,18 +68,18 @@ onlinebill/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/onlinebill.git
+   git clone https://github.com/SandaruP204/online-billing-system-pahanaedu.git
    cd onlinebill
    ```
 
 2. **Database Setup**
    - Create a MySQL database:
      ```sql
-     CREATE DATABASE pahana;
+     CREATE DATABASE onlinebill;
      ```
    - Import schema:
      ```bash
-     mysql -u root -p pahana < sql/schema.sql
+     mysql -u root -p onlinebill < sql/schema.sql
      ```
 
 3. **Configure Database Connection**
